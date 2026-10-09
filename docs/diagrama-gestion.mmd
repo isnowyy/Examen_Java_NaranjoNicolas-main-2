@@ -1,0 +1,58 @@
+%% CrediYa - Gestion de prestamos en memoria (paquete com.crediya.gestion)
+%% Se visualiza en https://mermaid.live o directamente en GitHub.
+classDiagram
+    direction LR
+
+    class MainGestionPrestamos {
+        +main(String[] args)$
+    }
+
+    class GestorPrestamos {
+        -List~Prestamo~ prestamos
+        -int siguienteId
+        +registrarPrestamo(Prestamo p)
+        +listarPrestamos()
+        +buscarPorEstado(String estado) List~Prestamo~
+        +guardarPrestamoEnBD(Prestamo p) int
+        +getPrestamos() List~Prestamo~
+    }
+
+    class Prestamo {
+        -int id
+        -int clienteId
+        -double monto
+        -double interesMensual
+        -int plazoMeses
+        -String estado
+        +calcularTotalAPagar() double
+        +setEstado(String estado)
+        +toString() String
+    }
+
+    class DatoInvalidoException {
+        <<checked>>
+    }
+
+    class Exception
+
+    class ConexionBD {
+        <<singleton>>
+        +getInstancia()$ ConexionBD
+        +abrir() Connection
+    }
+
+    class EstadoPrestamo {
+        <<enumeration>>
+        ACTIVO
+        PAGADO
+        MORA
+        +getValor() String
+    }
+
+    MainGestionPrestamos ..> GestorPrestamos : usa
+    GestorPrestamos "1" o-- "0..*" Prestamo : ArrayList
+    GestorPrestamos ..> DatoInvalidoException : lanza
+    Prestamo ..> DatoInvalidoException : lanza
+    Exception <|-- DatoInvalidoException
+    GestorPrestamos ..> ConexionBD : guardarPrestamoEnBD
+    Prestamo ..> EstadoPrestamo : valores del estado
